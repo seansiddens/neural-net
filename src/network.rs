@@ -116,19 +116,36 @@ impl Network {
 
         // Compute the gradient of the cost function for this mini batch.
         for training_image in mini_batch {
-            self.backprop(&mut nabla_b, &mut nabla_w, training_image);
+            let (delta_nabla_b, delta_nabla_w) = self.backprop(training_image);
+
+
 
         }
     }
 
-    /// Updates nabla_b and nabla_w to be the gradient of the cost function for this training example.
+    /// Returns a tuple "(nabla_b, nabla_w)" representing the gradient for the cost function C_x. 
+    /// "nabla_b" and "nabla_w" are layer-by-layer lists of vectors, similar to "self.biases" and "self.weights".
     fn backprop(
         &mut self,
-        nabla_b: &mut Vec<Array2<f64>>,
-        nabla_w: &mut Vec<Array2<f64>>,
         training_image: &MnistImage,
-    ) {
-        todo!();
+    ) -> (Vec<Array2<f64>>, Vec<Array2<f64>>) {
+        let mut nabla_b: Vec<Array2<f64>> = Vec::with_capacity(self.biases.len());
+        for b in &self.biases {
+            let shape = b.shape();
+            nabla_b.push(Array2::<f64>::zeros((shape[0], shape[1])));
+        }
+        let mut nabla_w: Vec<Array2<f64>> = Vec::with_capacity(self.weights.len());
+        for w in &self.weights {
+            let shape = w.shape();
+            nabla_w.push(Array2::zeros((shape[0], shape[1])));
+        }
+
+        // Feedforward.
+        let activation = &training_image.image;
+        let mut activations = vec![activation]; // list to store all the activations, layer by layer.
+        let mut zs: Vec<Array2<f64>> = Vec::new(); // List to store the z vectors, layer by layer.
+
+        (nabla_b, nabla_w)
     }
 }
 
